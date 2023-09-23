@@ -1,13 +1,11 @@
 package main;
 import lexer.*;
-
-import java.util.Queue;
+import test.*;
 
 public class Main {
     public static void main(String[] args) throws InvalidCharacterException, InvalidNumberException {
-        Lexer lexer = new Lexer("+3!+-.E34!+3");
-        Queue<Token> tokens = lexer.lex();
-        System.out.println(tokens);
+        LexerTest test = new LexerTest();
+        test.runTests();
     }
 }
 

@@ -20,11 +20,11 @@ public class Lexer {
         operators = new HashMap<>();
         operators.put("+", TokenName.ADD);
         operators.put("-", TokenName.SUB);
-        operators.put("*", TokenName.MULT);
-        operators.put("!", TokenName.FACT);
+        operators.put("*", TokenName.MUL);
+        operators.put("!", TokenName.FCT);
         operators.put("cos", TokenName.COS);
         postfix_tokens = new HashSet<>();
-        postfix_tokens.add(TokenName.FACT);
+        postfix_tokens.add(TokenName.FCT);
         postfix_tokens.add(TokenName.NUM);
     }
 
