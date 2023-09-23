@@ -38,6 +38,7 @@ public class Lexer {
 
         while (start < expression.length()){
             char peek = expression.charAt(start);
+            if (peek == ' ') {start ++; continue;}
             if ((peek == '+' || peek == '-') && last_token != null && postfix_tokens.contains(last_token.name)){
                 if (peek == '+') last_token = new Token(TokenName.ADD);
                 else {last_token = new Token(TokenName.SUB);}
@@ -64,7 +65,7 @@ public class Lexer {
                         else if (num.charAt(i) == 'E') break;
                     }
                     if (invalid) throw new InvalidNumberException(String.format("Invalid number '%s' at index %d", num, start));
-                    else {last_token = new Num(TokenName.NUM, num);}
+                    else {last_token = new Num(TokenName.NUM, num.replaceAll("\\s",""));}
 
                 }
                 else {last_token = new Token(node.end_token.get());}

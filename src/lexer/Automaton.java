@@ -11,6 +11,7 @@ class Automaton { //augmented prefix tree
     Automaton(HashMap<String, TokenName> operators){
         this.operators = operators;
         this.start = new AutomatonNode(Optional.empty());
+        this.start.children.put(' ', this.start); //ignore spaces at the start of a token
     }
 
     AutomatonNode construct(){
@@ -38,8 +39,8 @@ class Automaton { //augmented prefix tree
     }
 
     private void addNum(){
-        // add (unsigned) floating point numbers to the automation
-        // (+/- ->) digit* -> . -> digit* -> E -> +/- -> digit+
+        // add floating point numbers to the automation
+        // (+/-)* -> digit* -> . -> digit* -> E -> +/- -> digit+
         AutomatonNode whole_node = new AutomatonNode(Optional.of(TokenName.NUM));
         AutomatonNode point_node = new AutomatonNode(Optional.of(TokenName.NUM)); // Need to check in lexer that we dont accept '.', '-.' or '+.', or '+.E1', or '.E1', i.e. there must be a digit before E
         AutomatonNode frac_node = new AutomatonNode(Optional.of(TokenName.NUM));
@@ -49,13 +50,22 @@ class Automaton { //augmented prefix tree
 
         // Note: + and - could be part of a signed float, or an infix operator,
         // so we set the nodes for these as invalid, and deal with this disambiguation in the lexer itself.
-        start.children.get('+').end_token = Optional.empty();
-        start.children.get('-').end_token = Optional.empty();
+        // note that we also accept +-+++ <num> as a valid float, and + -   + <num>
+        AutomatonNode plus_node = start.children.get('+');
+        AutomatonNode minus_node = start.children.get('-');
+        plus_node.end_token = Optional.empty();
+        minus_node.end_token = Optional.empty();
+        plus_node.children.put('+', plus_node);
+        plus_node.children.put('-', minus_node);
+        minus_node.children.put('+', plus_node);
+        minus_node.children.put('-', minus_node);
+        plus_node.children.put(' ', plus_node);
+        minus_node.children.put(' ', minus_node);
 
         //add edges from nodes in a valid float
         start.children.put('.',point_node);
-        start.children.get('+').children.put('.',point_node);
-        start.children.get('-').children.put('.',point_node);
+        plus_node.children.put('.',point_node);
+        minus_node.children.put('.',point_node);
         whole_node.children.put('.',point_node);
         whole_node.children.put('E', exp_node);
         point_node.children.put('E', exp_node);

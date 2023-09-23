@@ -5,22 +5,37 @@ import java.util.Queue;
 
 public class LexerTest {
     public void runTests() {
+        // Valid tests
         run("-2*3+-1!+cos5", "[-2, MUL, 3, ADD, -1, FCT, ADD, COS, 5]");
-        run("1+2-3+a", "InvalidCharacterException");
-        run("1+2-3++", "InvalidCharacterException");
-        run("1+.-3", "InvalidNumberException");
         run("1+.2-1.", "[1, ADD, .2, SUB, 1.]");
         run(".1+.2E2cos1E1", "[.1, ADD, .2E2, COS, 1E1]");
-        run(".1+.2E2co1E1", "InvalidCharacterException");
         run(".3E53.2*3", "[.3E53, .2, MUL, 3]"); //parser must handle this
         run("", "[]");
         run("2", "[2]");
         run("coscos4.!!", "[COS, COS, 4., FCT, FCT]");
+        run("1E3+!2E4", "[1E3, ADD, FCT, 2E4]");
+        //InvalidCharacterException tests
+        run("1+2-3+a", "InvalidCharacterException");
+        run("1+2-3++", "InvalidCharacterException");
+        run(".1+.2E2co1E1", "InvalidCharacterException");
         run("cossin4.!!", "InvalidCharacterException");
-        run(".", "InvalidNumberException");
         run("a", "InvalidCharacterException");
         run("1E3E4", "InvalidCharacterException");
-        run("1E3+!2E4", "[1E3, ADD, FCT, 2E4]");
+
+        //InvalidNumberException tests
+        run("1+.-3", "InvalidNumberException");
+        run(".", "InvalidNumberException");
+        run("4!*cos3-+.E-2", "InvalidNumberException");
+
+        //multiple unary operator tests
+        run("+++1*4", "[+++1, MUL, 4]");
+        run("+++*4", "InvalidCharacterException");
+        run("+++1E3+2!*--+-2E4", "[+++1E3, ADD, 2, FCT, MUL, --+-2E4]");
+
+        //Spacing tests
+        run("  3 +  10  * cos 5", "[3, ADD, 10, MUL, COS, 5]");
+        run("  3 +  10  * co s 5", "InvalidCharacterException");
+        run("  3 + + - + - 10  * cos 5  ! ", "[3, ADD, +-+-10, MUL, COS, 5, FCT]");
     }
 
     void run(String expression, String expected_output){
