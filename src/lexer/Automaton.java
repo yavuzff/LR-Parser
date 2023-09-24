@@ -6,9 +6,9 @@ import java.util.Optional;
 
 class Automaton { //augmented prefix tree
     AutomatonNode start;
-    HashMap<String, TokenName> operators;
+    HashMap<String, SymbolName> operators;
     // operators is a map from operator string to operator TokenName (operator cannot be ., E or [0-9])
-    Automaton(HashMap<String, TokenName> operators){
+    Automaton(HashMap<String, SymbolName> operators){
         this.operators = operators;
         this.start = new AutomatonNode(Optional.empty());
         this.start.children.put(' ', this.start); //ignore spaces at the start of a token
@@ -22,7 +22,7 @@ class Automaton { //augmented prefix tree
 
     private void addOperators(){
         // add the operators (e.g. +, -, *, !, cos) to the automaton, as if it was a prefix tree
-        for (Map.Entry<String, TokenName> entry: operators.entrySet()){
+        for (Map.Entry<String, SymbolName> entry: operators.entrySet()){
             String operator = entry.getKey();
             AutomatonNode current = start;
 
@@ -41,12 +41,12 @@ class Automaton { //augmented prefix tree
     private void addNum(){
         // add floating point numbers to the automation
         // (+/-)* -> digit* -> . -> digit* -> E -> +/- -> digit+
-        AutomatonNode whole_node = new AutomatonNode(Optional.of(TokenName.NUM));
-        AutomatonNode point_node = new AutomatonNode(Optional.of(TokenName.NUM)); // Need to check in lexer that we dont accept '.', '-.' or '+.', or '+.E1', or '.E1', i.e. there must be a digit before E
-        AutomatonNode frac_node = new AutomatonNode(Optional.of(TokenName.NUM));
+        AutomatonNode whole_node = new AutomatonNode(Optional.of(SymbolName.NUM));
+        AutomatonNode point_node = new AutomatonNode(Optional.of(SymbolName.NUM)); // Need to check in lexer that we dont accept '.', '-.' or '+.', or '+.E1', or '.E1', i.e. there must be a digit before E
+        AutomatonNode frac_node = new AutomatonNode(Optional.of(SymbolName.NUM));
         AutomatonNode exp_node = new AutomatonNode();
         AutomatonNode exp_sign_node = new AutomatonNode();
-        AutomatonNode exp_digit_node = new AutomatonNode(Optional.of(TokenName.NUM));
+        AutomatonNode exp_digit_node = new AutomatonNode(Optional.of(SymbolName.NUM));
 
         // Note: + and - could be part of a signed float, or an infix operator,
         // so we set the nodes for these as invalid, and deal with this disambiguation in the lexer itself.

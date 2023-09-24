@@ -3,7 +3,7 @@ package lexer;
 public class Num extends Token{
     String value;
 
-    public Num(TokenName name, String value){
+    public Num(SymbolName name, String value){
         super(name);
         this.value = value;
     }

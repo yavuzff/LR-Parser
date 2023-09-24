@@ -7,32 +7,37 @@ import java.util.Queue;
 
 public class Lexer {
     String expression;
-    HashMap<String, TokenName> operators;
-    HashSet<TokenName> postfix_tokens;
-    public Lexer (String expression, HashMap<String, TokenName> operators, HashSet<TokenName> postfix_tokens){
-        this.expression = expression;
+    HashMap<String, SymbolName> operators;
+    HashSet<SymbolName> postfix_tokens;
+    Automaton automaton;
+    public Lexer (HashMap<String, SymbolName> operators, HashSet<SymbolName> postfix_tokens){
         this.operators = operators;
         this.postfix_tokens = postfix_tokens;
+        initialise();
     }
 
-    public Lexer (String expression){
-        this.expression = expression;
+    public Lexer (){ //default setting
         operators = new HashMap<>();
-        operators.put("+", TokenName.ADD);
-        operators.put("-", TokenName.SUB);
-        operators.put("*", TokenName.MUL);
-        operators.put("!", TokenName.FCT);
-        operators.put("cos", TokenName.COS);
+        operators.put("+", SymbolName.ADD);
+        operators.put("-", SymbolName.SUB);
+        operators.put("*", SymbolName.MUL);
+        operators.put("!", SymbolName.FCT);
+        operators.put("cos", SymbolName.COS);
         postfix_tokens = new HashSet<>();
-        postfix_tokens.add(TokenName.FCT);
-        postfix_tokens.add(TokenName.NUM);
+        postfix_tokens.add(SymbolName.FCT);
+        postfix_tokens.add(SymbolName.NUM);
+        initialise();
     }
 
-    public Queue<Token> lex() throws InvalidCharacterException, InvalidNumberException {
+    private void initialise(){
+        automaton = new Automaton(operators);
+        automaton.construct();
+    }
+
+    public Queue<Token> lex(String expr) throws InvalidCharacterException, InvalidNumberException {
+        expression = expr;
         Queue<Token> res = new LinkedList<>();
 
-        Automaton automaton = new Automaton(operators);
-        automaton.construct();
         Token last_token = null;
         int start = 0;
 
@@ -40,8 +45,8 @@ public class Lexer {
             char peek = expression.charAt(start);
             if (peek == ' ') {start ++; continue;}
             if ((peek == '+' || peek == '-') && last_token != null && postfix_tokens.contains(last_token.name)){
-                if (peek == '+') last_token = new Token(TokenName.ADD);
-                else {last_token = new Token(TokenName.SUB);}
+                if (peek == '+') last_token = new Token(SymbolName.ADD);
+                else {last_token = new Token(SymbolName.SUB);}
                 res.add(last_token);
                 start ++;
             }
@@ -54,7 +59,7 @@ public class Lexer {
                 }
 
                 if (node.end_token.isEmpty()) throw new InvalidCharacterException(String.format("Invalid character at index %d", index));
-                else if (node.end_token.get() == TokenName.NUM){
+                else if (node.end_token.get() == SymbolName.NUM){
                     String num = expression.substring(start, index);
                     Boolean invalid = true;
                     for(int i=0; i<num.length();i++){
@@ -65,7 +70,7 @@ public class Lexer {
                         else if (num.charAt(i) == 'E') break;
                     }
                     if (invalid) throw new InvalidNumberException(String.format("Invalid number '%s' at index %d", num, start));
-                    else {last_token = new Num(TokenName.NUM, num.replaceAll("\\s",""));}
+                    else {last_token = new Num(SymbolName.NUM, num.replaceAll("\\s",""));}
 
                 }
                 else {last_token = new Token(node.end_token.get());}
@@ -75,8 +80,7 @@ public class Lexer {
 
             }
         }
-
-
+        res.add(new Token(SymbolName.EOF));
         return res;
     }
 }

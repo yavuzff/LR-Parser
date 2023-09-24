@@ -1,14 +1,14 @@
 package lexer;
 
 
-public class Token {
-    TokenName name;
+import parser.Symbol;
 
-    public Token(TokenName name) {
-        this.name = name;
+public class Token extends Symbol {
+
+    public Token(SymbolName name) { super.name = name;
     }
 
-    public TokenName getName(){return name;}
+    public SymbolName getName(){return name;}
 
     @Override
     public String toString() {
