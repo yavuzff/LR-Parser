@@ -1,7 +1,6 @@
 package parser;
 
 import lexer.SymbolName;
-
 import java.util.Objects;
 import java.util.Optional;
 

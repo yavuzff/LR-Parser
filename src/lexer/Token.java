@@ -1,12 +1,10 @@
 package lexer;
 
 
-import parser.Symbol;
+public class Token {
 
-public class Token extends Symbol {
-
-    public Token(SymbolName name) { super.name = name;
-    }
+    SymbolName name;
+    public Token(SymbolName name) {this.name = name;}
 
     public SymbolName getName(){return name;}
 

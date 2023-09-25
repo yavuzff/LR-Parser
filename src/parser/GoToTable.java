@@ -3,7 +3,8 @@ package parser;
 import lexer.SymbolName;
 import java.util.HashMap;
 
-class GoToTable extends Table{
+class GoToTable{
+
     private HashMap<State, HashMap<SymbolName, State>> table = new HashMap<>();
     State read(State s, SymbolName nonterminal){
         if (!table.get(s).containsKey(nonterminal)){

@@ -1,10 +1,9 @@
 package parser;
-import lexer.SymbolName;
-import lexer.Token;
 
+import lexer.SymbolName;
 import java.util.HashMap;
 
-class ActionTable extends Table{
+class ActionTable{
 
     private HashMap<State, HashMap<SymbolName, Action>> table = new HashMap<>();
 
