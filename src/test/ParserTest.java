@@ -58,8 +58,10 @@ public class ParserTest {
 
             try{
                 ParseTreeNode root = parser.parse(tokens);
+                System.out.println("Parse tree: ");
+                System.out.println(root);
+
                 Double res = root.evaluate();
-                System.out.println("Parse tree: " + root);
                 System.out.println("Result: " + res);
                 assert !expected_output.equals("InvalidSyntaxException");
                 assert Math.abs(Double.parseDouble(expected_output) - res)  <  EPSILON;

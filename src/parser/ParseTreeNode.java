@@ -3,6 +3,7 @@ package parser;
 import lexer.SymbolName;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Optional;
 
 
@@ -62,8 +63,23 @@ public class ParseTreeNode {
     public void setValue(String value) {this.value = Optional.of(value);}
 
     @Override
-    public String toString() {
-        if (value.isPresent()) return "Node{"+ name + ", children=" + children + ", val=" + value.get() + '}';
-        else return "Node{"+ name + ", children=" + children + '}';
+    public  String toString(){
+        StringBuilder buffer = new StringBuilder(50);
+        print(buffer, "", "");
+        return buffer.toString();
+    }
+
+    private void print(StringBuilder buffer, String prefix, String children_prefix){
+        buffer.append(prefix);
+        buffer.append(name + (value.map(s -> " " + s).orElse("")));
+        buffer.append('\n');
+        for (Iterator<ParseTreeNode> it = children.iterator(); it.hasNext();){
+            ParseTreeNode next = it.next();
+            if (it.hasNext()){
+                next.print(buffer, children_prefix + "├── ", children_prefix + "│   ");
+            } else {
+                next.print(buffer, children_prefix + "└── ", children_prefix + "    ");
+            }
+        }
     }
 }
