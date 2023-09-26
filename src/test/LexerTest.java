@@ -4,7 +4,11 @@ import lexer.*;
 import java.util.Queue;
 
 public class LexerTest {
-    public void runTests() {
+    public static void main(String[] args) throws InvalidCharacterException, InvalidNumberException {
+        runTests();
+    }
+
+    public static void runTests() {
         // Valid tests
         run("-2*3+-1!+cos5", "[-2, MUL, 3, ADD, -1, FCT, ADD, COS, 5, EOF]");
         run("1+.2-1.", "[1, ADD, .2, SUB, 1., EOF]");
@@ -36,9 +40,16 @@ public class LexerTest {
         run("  3 +  10  * cos 5", "[3, ADD, 10, MUL, COS, 5, EOF]");
         run("  3 +  10  * co s 5", "InvalidCharacterException");
         run("  3 + + - + - 10  * cos 5  ! ", "[3, ADD, +-+-10, MUL, COS, 5, FCT, EOF]");
+
+        //Parentheses tests
+        run("(1+.2)-1.", "[OPENP, 1, ADD, .2, CLOSEP, SUB, 1., EOF]");
+        run("(1+.2))))-1.", "[OPENP, 1, ADD, .2, CLOSEP, CLOSEP, CLOSEP, CLOSEP, SUB, 1., EOF]");
+        run("((1+.2))))-1.", "[OPENP, OPENP, 1, ADD, .2, CLOSEP, CLOSEP, CLOSEP, CLOSEP, SUB, 1., EOF]");
+        run("((1+.2))))-1()", "[OPENP, OPENP, 1, ADD, .2, CLOSEP, CLOSEP, CLOSEP, CLOSEP, SUB, 1, OPENP, CLOSEP, EOF]");
+        //note -(num) is seen as error - incorporate unary operator as part of grammar to allow this
     }
 
-    void run(String expression, String expected_output){
+    static void run(String expression, String expected_output){
         Lexer lexer = new Lexer();
         System.out.println("Testing: " + expression);
         try{
@@ -47,15 +58,13 @@ public class LexerTest {
             assert !expected_output.equals("InvalidCharacterException");
             assert !expected_output.equals("InvalidNumberException");
             assert res.toString().equals(expected_output);
-            System.out.println("PASSED ");
         }catch(InvalidCharacterException e){
             System.out.println("Result: InvalidCharacterException: "+e.getMessage());
             assert expected_output.equals("InvalidCharacterException");
-            System.out.println("PASSED");
         }catch(InvalidNumberException e){
             System.out.println("Result: InvalidNumberException: "+e.getMessage());
             assert expected_output.equals("InvalidNumberException");
-            System.out.println("PASSED");
         }
+        System.out.println("PASSED");
     }
 }
