@@ -13,18 +13,18 @@ public class Parser {
     private State start_state; //starting state of the parser
     private HashMap<SymbolName, HashSet<SymbolName>> follow;
 
-    public Parser(Grammar grammar){
+    public Parser(Grammar grammar) throws InvalidGrammarException {
         if (grammar.nonterminals == null || grammar.terminals == null || grammar.rules == null || grammar.start == null){
             throw new RuntimeException("Error: Ensure grammar nonterminals, terminals, rules and start symbol is defined.");
         }
         initialise(grammar);
     }
 
-    public Parser(){
+    public Parser() throws InvalidGrammarException {
         initialise(Grammar.getDefaultGrammar());
     }
 
-    private void initialise(Grammar grammar){
+    private void initialise(Grammar grammar) throws InvalidGrammarException {
         this.grammar = grammar.toAugmentedGrammar();
         constructFollow();
         constructCanonicalCollection();
@@ -32,20 +32,25 @@ public class Parser {
     }
 
 
-    public ParseTreeNode parse(Queue<Token> tokens){ //remove tables
+    public ParseTreeNode parse(Queue<Token> tokens) throws InvalidSyntaxException { //remove tables
         Stack<State> stack = new Stack<>();
         stack.add(start_state); // starting state
         Stack<ParseTreeNode> node_stack = new Stack<>();
-
+        int token_count = 0;
         Token token = tokens.remove(); // Note: every token queue ends with EOF
         if (tokens.isEmpty()){return null;}
 
         while (true){
-            System.out.println("Iteration - Stack");
-            System.out.println(stack);
+            //System.out.println("Iteration - Stack");
+            //System.out.println(stack);
 
             State top = stack.peek();
-            Action response = action.read(top, token.getName());
+            Action response;
+            try {
+                response = action.read(top, token.getName());
+            }catch (InvalidSyntaxException e){
+                throw new InvalidSyntaxException("Syntax Error: Invalid token " + token.getName() + "at index" + token_count);
+            }
             if (response instanceof Action.Shift){
                 stack.push( ((Action.Shift) response).state );
                 ParseTreeNode new_node;
@@ -53,6 +58,7 @@ public class Parser {
                 else new_node = new ParseTreeNode(token.getName());
                 node_stack.push(new_node);
                 token = tokens.remove();
+                token_count ++;
             } else if (response instanceof Action.Reduce){
                 Production prod = ((Action.Reduce) response).production;
                 // Deal with state
@@ -71,9 +77,9 @@ public class Parser {
                 Collections.reverse(children);
                 new_node.setChildren(children);
                 node_stack.push(new_node);
-                System.out.println(prod);
+                //System.out.println(prod);
             } else if (response instanceof Action.Accept){
-                System.out.println("Successful parse!");
+                //System.out.println("Successful parse!");
                 assert node_stack.size() == 1;
                 return node_stack.pop();
             } //else we get an Action Exception - syntax error
@@ -197,7 +203,7 @@ public class Parser {
         }
     }
 
-    private void constructTables(){
+    private void constructTables() throws InvalidGrammarException {
         go_to = new GoToTable();
         for (State s: states.values()){
             for (SymbolName nonterminal: grammar.nonterminals){
