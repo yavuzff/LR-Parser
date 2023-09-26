@@ -23,9 +23,12 @@ public class Lexer {
         operators.put("*", SymbolName.MUL);
         operators.put("!", SymbolName.FCT);
         operators.put("cos", SymbolName.COS);
+        operators.put("(", SymbolName.OPENP);
+        operators.put(")", SymbolName.CLOSEP);
         postfix_tokens = new HashSet<>();
         postfix_tokens.add(SymbolName.FCT);
         postfix_tokens.add(SymbolName.NUM);
+        postfix_tokens.add(SymbolName.CLOSEP);
         initialise();
     }
 

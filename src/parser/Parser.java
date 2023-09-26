@@ -41,15 +41,12 @@ public class Parser {
         if (tokens.isEmpty()){return null;}
 
         while (true){
-            //System.out.println("Iteration - Stack");
-            //System.out.println(stack);
-
             State top = stack.peek();
             Action response;
             try {
                 response = action.read(top, token.getName());
             }catch (InvalidSyntaxException e){
-                throw new InvalidSyntaxException("Syntax Error: Invalid token " + token.getName() + "at index" + token_count);
+                throw new InvalidSyntaxException("Syntax Error: Invalid token " + token.getName() + " at token index " + token_count);
             }
             if (response instanceof Action.Shift){
                 stack.push( ((Action.Shift) response).state );
@@ -77,12 +74,10 @@ public class Parser {
                 Collections.reverse(children);
                 new_node.setChildren(children);
                 node_stack.push(new_node);
-                //System.out.println(prod);
             } else if (response instanceof Action.Accept){
-                //System.out.println("Successful parse!");
                 assert node_stack.size() == 1;
                 return node_stack.pop();
-            } //else we get an Action Exception - syntax error
+            } //else we get an InvalidSyntaxException
         }
     }
 

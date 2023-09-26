@@ -35,12 +35,15 @@ public class Grammar {
         grammar.addTerminal(SymbolName.COS);
         grammar.addTerminal(SymbolName.FCT);
         grammar.addTerminal(SymbolName.NUM);
+        grammar.addTerminal(SymbolName.OPENP);
+        grammar.addTerminal(SymbolName.CLOSEP);
 
         grammar.addNonterminal(SymbolName.E0);
         grammar.addNonterminal(SymbolName.E1);
         grammar.addNonterminal(SymbolName.E2);
         grammar.addNonterminal(SymbolName.E3);
         grammar.addNonterminal(SymbolName.E4);
+        grammar.addNonterminal(SymbolName.E5);
         grammar.start = SymbolName.E0;
 
         //Production rules
@@ -53,7 +56,11 @@ public class Grammar {
         grammar.addRule(new Production(SymbolName.E3, new ArrayList<>(Arrays.asList(SymbolName.COS, SymbolName.E3))));
         grammar.addRule(new Production(SymbolName.E3, new ArrayList<>(Arrays.asList(SymbolName.E4))));
         grammar.addRule(new Production(SymbolName.E4, new ArrayList<>(Arrays.asList(SymbolName.E4, SymbolName.FCT))));
-        grammar.addRule(new Production(SymbolName.E4, new ArrayList<>(Arrays.asList(SymbolName.NUM))));
+        grammar.addRule(new Production(SymbolName.E4, new ArrayList<>(Arrays.asList(SymbolName.E5))));
+        grammar.addRule(new Production(SymbolName.E5, new ArrayList<>(Arrays.asList(SymbolName.OPENP, SymbolName.E0, SymbolName.CLOSEP))));
+        grammar.addRule(new Production(SymbolName.E5, new ArrayList<>(Arrays.asList(SymbolName.NUM))));
+
+
         return grammar;
     }
     public Grammar (){

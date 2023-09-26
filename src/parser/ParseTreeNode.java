@@ -27,6 +27,7 @@ public class ParseTreeNode {
     public Double evaluate(){
         if (children.size() == 1) return children.get(0).evaluate();
         switch (name){
+            case E5: return children.get(1).evaluate(); //parentheses
             case E4: return Math.sqrt(children.get(0).evaluate()); //TODO: return factorial of this (instead of sqrt)
             case E3: return Math.cos(children.get(1).evaluate());
             case E2: return children.get(0).evaluate() * children.get(2).evaluate();
