@@ -1,6 +1,6 @@
 # LR-parser
 
-This is a lexer + LR(0) parser for mathematical expressions. You can define your own operators/grammar or use the default options.
+This is a lexer + SLR(1) parser for mathematical expressions. You can define your own operators/grammar or use the default options.
 The Lexer class is used to convert a string expression to a list of tokens. This is passed to the Parser class which returns a parse tree. The parse tree can be evaluated to return the result of the expression.
 For sample usage, see `Main.main`. Below is an example output using the default grammar, lexer and evaluation settings.
 
